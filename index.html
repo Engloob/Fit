@@ -227,15 +227,17 @@
                 const script = document.createElement('script');
                 script.src = src;
                 script.onload = () => resolve(true);
-                script.onerror = () => resolve(false);
+                script.onerror = () => resolve(false); // يتوقف تلقائياً عند آخر ملف موجود
                 document.body.appendChild(script);
             });
         }
 
         async function autoLoadAllPosts() {
-            const maxArticles = 50; 
-            for (let index = 1; index <= maxArticles; index++) {
-                await loadScript(`sub${index}.js`);
+            let index = 1;
+            while (true) {
+                const loaded = await loadScript(`sub${index}.js`);
+                if (!loaded) break; // يربط ويحمل المقالات بلا حدود حتى ينتهي آخر ملف موجود
+                index++;
             }
 
             const urlParams = new URLSearchParams(window.location.search);
